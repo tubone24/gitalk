@@ -6,13 +6,11 @@ const getQL = (vars, pagerDirection) => {
   const cursorDirection = pagerDirection === 'last' ? 'before' : 'after'
   const ql = `
   query getIssueAndComments(
-    $owner: String!,
-    $repo: String!,
     $id: Int!,
     $cursor: String,
     $pageSize: Int!
   ) {
-    repository(owner: $owner, name: $repo) {
+    repository(owner: "tubone24", name: "blog") {
       issue(number: $id) {
         title
         url
@@ -66,14 +64,12 @@ const getQL = (vars, pagerDirection) => {
 }
 
 function getComments (issue) {
-  const { owner, repo, perPage, pagerDirection, defaultAuthor } = this.options
+  const { perPage, pagerDirection, defaultAuthor } = this.options
   const { cursor, comments } = this.state
   return axiosGithub.post(
     '/graphql',
     getQL(
       {
-        owner,
-        repo,
         id: issue.number,
         pageSize: perPage,
         cursor
@@ -100,7 +96,7 @@ function getComments (issue) {
         created_at: node.createdAt,
         body_html: node.bodyHTML,
         body: node.body,
-        html_url: `https://github.com/${owner}/${repo}/issues/${issue.number}#issuecomment-${node.databaseId}`,
+        html_url: `https://github.com/tubone24/blog/issues/${issue.number}#issuecomment-${node.databaseId}`,
         reactions: node.reactions
       }
     })
