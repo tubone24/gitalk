@@ -6164,7 +6164,7 @@ var GitalkComponent = function (_Component) {
       localComments: [],
       comment: '',
       page: 1,
-      pagerDirection: 'last',
+      pagerDirection: 'first',
       cursor: null,
       previewHtml: '',
 
@@ -6367,16 +6367,10 @@ var GitalkComponent = function (_Component) {
     };
 
     _this.handleCommentFocus = function (e) {
-      var distractionFreeMode = _this.options.distractionFreeMode;
-
-      if (!distractionFreeMode) return e.preventDefault();
       _this.setState({ isInputFocused: true });
     };
 
     _this.handleCommentBlur = function (e) {
-      var distractionFreeMode = _this.options.distractionFreeMode;
-
-      if (!distractionFreeMode) return e.preventDefault();
       _this.setState({ isInputFocused: false });
     };
 
@@ -6402,9 +6396,7 @@ var GitalkComponent = function (_Component) {
       title: window.document.title,
       body: '', // window.location.href + header.meta[description]
       perPage: 10,
-      pagerDirection: 'last', // last or first
       createIssueManually: false,
-      distractionFreeMode: false,
       proxy: 'https://cors-anywhere.herokuapp.com/https://github.com/login/oauth/access_token',
       flipMoveOptions: {
         staggerDelayBy: 150,
@@ -6425,7 +6417,6 @@ var GitalkComponent = function (_Component) {
       updateCountCallback: null
     }, props.options);
 
-    _this.state.pagerDirection = _this.options.pagerDirection;
     var storedComment = window.localStorage.getItem(_const.GT_COMMENT);
     if (storedComment) {
       _this.state.comment = decodeURIComponent(storedComment);
@@ -6518,13 +6509,11 @@ var GitalkComponent = function (_Component) {
       var _this4 = this;
 
       var _options = this.options,
-          owner = _options.owner,
-          repo = _options.repo,
           number = _options.number,
           clientID = _options.clientID,
           clientSecret = _options.clientSecret;
 
-      var getUrl = '/repos/' + owner + '/' + repo + '/issues/' + number;
+      var getUrl = '/repos/tubone24/blog/issues/' + number;
 
       return new _promise2.default(function (resolve, reject) {
         _util.axiosGithub.get(getUrl, {
@@ -6557,15 +6546,13 @@ var GitalkComponent = function (_Component) {
       var _this5 = this;
 
       var _options2 = this.options,
-          owner = _options2.owner,
-          repo = _options2.repo,
           id = _options2.id,
           labels = _options2.labels,
           clientID = _options2.clientID,
           clientSecret = _options2.clientSecret;
 
 
-      return _util.axiosGithub.get('/repos/' + owner + '/' + repo + '/issues', {
+      return _util.axiosGithub.get('/repos/tubone24/blog/issues', {
         auth: {
           username: clientID,
           password: clientSecret
@@ -6619,15 +6606,13 @@ var GitalkComponent = function (_Component) {
       var _this7 = this;
 
       var _options3 = this.options,
-          owner = _options3.owner,
-          repo = _options3.repo,
           title = _options3.title,
           body = _options3.body,
           id = _options3.id,
           labels = _options3.labels,
           url = _options3.url;
 
-      return _util.axiosGithub.post('/repos/' + owner + '/' + repo + '/issues', {
+      return _util.axiosGithub.post('/repos/tubone24/blog/issues', {
         title: title,
         labels: labels.concat(id),
         body: body || url + ' \n\n ' + ((0, _util.getMetaContent)('description') || (0, _util.getMetaContent)('description', 'og:description') || '')
@@ -6689,14 +6674,11 @@ var GitalkComponent = function (_Component) {
     value: function like(comment) {
       var _this9 = this;
 
-      var _options4 = this.options,
-          owner = _options4.owner,
-          repo = _options4.repo;
       var user = this.state.user;
       var comments = this.state.comments;
 
 
-      _util.axiosGithub.post('/repos/' + owner + '/' + repo + '/issues/comments/' + comment.id + '/reactions', {
+      _util.axiosGithub.post('/repos/tubone24/blog/issues/comments/' + comment.id + '/reactions', {
         content: 'heart'
       }, {
         headers: {
@@ -6803,15 +6785,12 @@ var GitalkComponent = function (_Component) {
       var _state2 = this.state,
           user = _state2.user,
           isIssueCreating = _state2.isIssueCreating;
-      var _options5 = this.options,
-          owner = _options5.owner,
-          repo = _options5.repo;
 
       return _react2.default.createElement(
         'div',
         { className: 'gt-no-init', key: 'no-init' },
         _react2.default.createElement('p', { dangerouslySetInnerHTML: {
-            __html: 'Related <a href="https://github.com/' + owner + '/' + repo + '/issues">Issues</a> not found'
+            __html: 'Related <a href="https://github.com/tubone24/blog/issues">Issues</a> not found'
           } }),
         _react2.default.createElement(
           'p',
@@ -6956,7 +6935,7 @@ var GitalkComponent = function (_Component) {
         try {
           updateCountCallback(cnt);
         } catch (err) {
-          console.log('An error occurred executing the updateCountCallback:', err);
+          console.log('error occurred updateCountCallback:', err);
         }
       }
 

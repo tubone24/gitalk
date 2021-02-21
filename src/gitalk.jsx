@@ -28,7 +28,7 @@ class GitalkComponent extends Component {
     localComments: [],
     comment: '',
     page: 1,
-    pagerDirection: 'last',
+    pagerDirection: 'first',
     cursor: null,
     previewHtml: '',
 
@@ -55,9 +55,7 @@ class GitalkComponent extends Component {
       title: window.document.title,
       body: '', // window.location.href + header.meta[description]
       perPage: 10,
-      pagerDirection: 'last', // last or first
       createIssueManually: false,
-      distractionFreeMode: false,
       proxy: 'https://cors-anywhere.herokuapp.com/https://github.com/login/oauth/access_token',
       flipMoveOptions: {
         staggerDelayBy: 150,
@@ -78,7 +76,6 @@ class GitalkComponent extends Component {
       updateCountCallback: null
     }, props.options)
 
-    this.state.pagerDirection = this.options.pagerDirection
     const storedComment = window.localStorage.getItem(GT_COMMENT)
     if (storedComment) {
       this.state.comment = decodeURIComponent(storedComment)
@@ -173,8 +170,8 @@ class GitalkComponent extends Component {
     })
   }
   getIssueById () {
-    const { owner, repo, number, clientID, clientSecret } = this.options
-    const getUrl = `/repos/${owner}/${repo}/issues/${number}`
+    const { number, clientID, clientSecret } = this.options
+    const getUrl = `/repos/tubone24/blog/issues/${number}`
 
     return new Promise((resolve, reject) => {
       axiosGithub.get(getUrl, {
@@ -204,9 +201,9 @@ class GitalkComponent extends Component {
     })
   }
   getIssueByLabels () {
-    const { owner, repo, id, labels, clientID, clientSecret } = this.options
+    const { id, labels, clientID, clientSecret } = this.options
 
-    return axiosGithub.get(`/repos/${owner}/${repo}/issues`, {
+    return axiosGithub.get(`/repos/tubone24/blog/issues`, {
       auth: {
         username: clientID,
         password: clientSecret
@@ -249,8 +246,8 @@ class GitalkComponent extends Component {
     return this.getIssueByLabels()
   }
   createIssue () {
-    const { owner, repo, title, body, id, labels, url } = this.options
-    return axiosGithub.post(`/repos/${owner}/${repo}/issues`, {
+    const { title, body, id, labels, url } = this.options
+    return axiosGithub.post(`/repos/tubone24/blog/issues`, {
       title,
       labels: labels.concat(id),
       body: body || `${url} \n\n ${
@@ -352,11 +349,10 @@ class GitalkComponent extends Component {
     })
   }
   like (comment) {
-    const { owner, repo } = this.options
     const { user } = this.state
     let { comments } = this.state
 
-    axiosGithub.post(`/repos/${owner}/${repo}/issues/comments/${comment.id}/reactions`, {
+    axiosGithub.post(`/repos/tubone24/blog/issues/comments/${comment.id}/reactions`, {
       content: 'heart'
     }, {
       headers: {
@@ -547,13 +543,9 @@ class GitalkComponent extends Component {
     window.location.reload()
   }
   handleCommentFocus = e => {
-    const { distractionFreeMode } = this.options
-    if (!distractionFreeMode) return e.preventDefault()
     this.setState({ isInputFocused: true })
   }
   handleCommentBlur = e => {
-    const { distractionFreeMode } = this.options
-    if (!distractionFreeMode) return e.preventDefault()
     this.setState({ isInputFocused: false })
   }
   handleSort = direction => e => {
@@ -575,11 +567,10 @@ class GitalkComponent extends Component {
   }
   noInit () {
     const { user, isIssueCreating } = this.state
-    const { owner, repo } = this.options
     return (
       <div className="gt-no-init" key="no-init">
         <p dangerouslySetInnerHTML={{
-          __html: `Related <a href="https://github.com/${owner}/${repo}/issues">Issues</a> not found`
+          __html: `Related <a href="https://github.com/tubone24/blog/issues">Issues</a> not found`
         }}/>
         <p>Please contact tubone24 to initialize the comment</p>
         {this.isAdmin ? <p>
@@ -680,7 +671,7 @@ class GitalkComponent extends Component {
       try {
         updateCountCallback(cnt)
       } catch (err) {
-        console.log('An error occurred executing the updateCountCallback:', err)
+        console.log('error occurred updateCountCallback:', err)
       }
     }
 
