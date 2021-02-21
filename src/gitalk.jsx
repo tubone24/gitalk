@@ -54,7 +54,6 @@ class GitalkComponent extends Component {
       labels: ['Gitalk'],
       title: window.document.title,
       body: '', // window.location.href + header.meta[description]
-      language: window.navigator.language || window.navigator.userLanguage,
       perPage: 10,
       pagerDirection: 'last', // last or first
       createIssueManually: false,
@@ -660,7 +659,7 @@ class GitalkComponent extends Component {
   }
   comments () {
     const { user, comments, isLoadOver, isLoadMore, pagerDirection } = this.state
-    const { language, flipMoveOptions, admin } = this.options
+    const { flipMoveOptions, admin } = this.options
     const totalComments = comments.concat([])
     if (pagerDirection === 'last' && this.accessToken) {
       totalComments.reverse()
@@ -673,7 +672,6 @@ class GitalkComponent extends Component {
               comment={c}
               key={c.id}
               user={user}
-              language={language}
               commentedText="commented"
               admin={admin}
               replyCallback={this.reply(c)}

@@ -1,34 +1,7 @@
 import React, { Component } from 'react'
 import Avatar from './avatar'
 import Svg from './svg'
-import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
-import buildDistanceInWordsLocaleZHCN from 'date-fns/locale/zh_cn/build_distance_in_words_locale/index'
-import buildDistanceInWordsLocaleZHTW from 'date-fns/locale/zh_tw/build_distance_in_words_locale/index'
-import buildDistanceInWordsLocaleES from 'date-fns/locale/es/build_distance_in_words_locale/index'
-import buildDistanceInWordsLocaleFR from 'date-fns/locale/fr/build_distance_in_words_locale/index'
-import buildDistanceInWordsLocaleRU from 'date-fns/locale/ru/build_distance_in_words_locale/index'
-import buildDistanceInWordsLocalePL from 'date-fns/locale/pl/build_distance_in_words_locale/index'
 import 'github-markdown-css/github-markdown.css'
-
-const ZHCN = buildDistanceInWordsLocaleZHCN()
-const ZHTW = buildDistanceInWordsLocaleZHTW()
-const ES = buildDistanceInWordsLocaleES()
-const FR = buildDistanceInWordsLocaleFR()
-const RU = buildDistanceInWordsLocaleRU()
-const PL = buildDistanceInWordsLocalePL()
-
-if (typeof window !== `undefined`) {
-  window.GT_i18n_distanceInWordsLocaleMap = {
-    zh: ZHCN,
-    'zh-CN': ZHCN,
-    'zh-TW': ZHTW,
-    'es-ES': ES,
-    fr: FR,
-    ru: RU,
-    pl: PL
-  }
-}
-
 
 export default class Comment extends Component {
   shouldComponentUpdate () {
@@ -50,7 +23,6 @@ export default class Comment extends Component {
     const {
       comment,
       user,
-      language,
       commentedText = '',
       admin = [],
       replyCallback,
@@ -94,13 +66,7 @@ export default class Comment extends Component {
             </a>
             <span className="gt-comment-text">{commentedText}</span>
             <span className="gt-comment-date">
-              {distanceInWordsToNow(comment.created_at, {
-                addSuffix: true,
-                locale: {
-                  distanceInWords:
-                    window.GT_i18n_distanceInWordsLocaleMap[language]
-                }
-              })}
+              {comment.created_at}
             </span>
 
             {reactions && (
