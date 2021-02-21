@@ -56,8 +56,8 @@ class GitalkComponent extends Component {
       body: '', // window.location.href + header.meta[description]
       perPage: 10,
       createIssueManually: false,
-      //proxy: 'https://blog.tubone-project24.xyz/.netlify/functions/cors-proxy-github',
-      proxy: 'https://github.com/login/oauth/access_token',
+      proxy: 'https://blog.tubone-project24.xyz/.netlify/functions/cors-proxy-github',
+      //proxy: 'https://github.com/login/oauth/access_token',
       flipMoveOptions: {
         staggerDelayBy: 150,
         appearAnimation: 'accordionVertical',
