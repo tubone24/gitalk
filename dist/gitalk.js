@@ -11384,7 +11384,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var GT_ACCESS_TOKEN = exports.GT_ACCESS_TOKEN = 'GT_ACCESS_TOKEN';
-var GT_VERSION = exports.GT_VERSION = "1.7.1"; // eslint-disable-line
+var GT_VERSION = exports.GT_VERSION = "1.7.2"; // eslint-disable-line
 var GT_COMMENT = exports.GT_COMMENT = 'GT_COMMENT';
 
 /***/ }),
@@ -11408,7 +11408,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var getQL = function getQL(vars, pagerDirection) {
   var cursorDirection = pagerDirection === 'last' ? 'before' : 'after';
-  var ql = '\n  query getIssueAndComments(\n    $owner: String!,\n    $repo: String!,\n    $id: Int!,\n    $cursor: String,\n    $pageSize: Int!\n  ) {\n    repository(owner: $owner, name: $repo) {\n      issue(number: $id) {\n        title\n        url\n        bodyHTML\n        createdAt\n        comments(' + pagerDirection + ': $pageSize, ' + cursorDirection + ': $cursor) {\n          totalCount\n          pageInfo {\n            ' + (pagerDirection === 'last' ? 'hasPreviousPage' : 'hasNextPage') + '\n            ' + (cursorDirection === 'before' ? 'startCursor' : 'endCursor') + '\n          }\n          nodes {\n            id\n            databaseId\n            author {\n              avatarUrl\n              login\n              url\n            }\n            bodyHTML\n            body\n            createdAt\n            reactions(first: 100, content: HEART) {\n              totalCount\n              viewerHasReacted\n              pageInfo{\n                hasNextPage\n              }\n              nodes {\n                id\n                databaseId\n                user {\n                  login\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n  ';
+  var ql = '\n  query getIssueAndComments(\n    $id: Int!,\n    $cursor: String,\n    $pageSize: Int!\n  ) {\n    repository(owner: "tubone24", name: "blog") {\n      issue(number: $id) {\n        title\n        url\n        bodyHTML\n        createdAt\n        comments(' + pagerDirection + ': $pageSize, ' + cursorDirection + ': $cursor) {\n          totalCount\n          pageInfo {\n            ' + (pagerDirection === 'last' ? 'hasPreviousPage' : 'hasNextPage') + '\n            ' + (cursorDirection === 'before' ? 'startCursor' : 'endCursor') + '\n          }\n          nodes {\n            id\n            databaseId\n            author {\n              avatarUrl\n              login\n              url\n            }\n            bodyHTML\n            body\n            createdAt\n            reactions(first: 100, content: HEART) {\n              totalCount\n              viewerHasReacted\n              pageInfo{\n                hasNextPage\n              }\n              nodes {\n                id\n                databaseId\n                user {\n                  login\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n  ';
 
   if (vars.cursor === null) delete vars.cursor;
 
@@ -11423,8 +11423,6 @@ function getComments(issue) {
   var _this = this;
 
   var _options = this.options,
-      owner = _options.owner,
-      repo = _options.repo,
       perPage = _options.perPage,
       pagerDirection = _options.pagerDirection,
       defaultAuthor = _options.defaultAuthor;
@@ -11433,8 +11431,6 @@ function getComments(issue) {
       comments = _state.comments;
 
   return _util.axiosGithub.post('/graphql', getQL({
-    owner: owner,
-    repo: repo,
     id: issue.number,
     pageSize: perPage,
     cursor: cursor
@@ -11458,7 +11454,7 @@ function getComments(issue) {
         created_at: node.createdAt,
         body_html: node.bodyHTML,
         body: node.body,
-        html_url: 'https://github.com/' + owner + '/' + repo + '/issues/' + issue.number + '#issuecomment-' + node.databaseId,
+        html_url: 'https://github.com/tubone24/blog/issues/' + issue.number + '#issuecomment-' + node.databaseId,
         reactions: node.reactions
       };
     });
