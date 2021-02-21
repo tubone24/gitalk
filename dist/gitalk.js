@@ -6398,6 +6398,7 @@ var GitalkComponent = function (_Component) {
       perPage: 10,
       createIssueManually: false,
       proxy: 'https://blog.tubone-project24.xyz/.netlify/functions/cors-proxy-github',
+      //proxy: 'https://github.com/login/oauth/access_token',
       flipMoveOptions: {
         staggerDelayBy: 150,
         appearAnimation: 'accordionVertical',
