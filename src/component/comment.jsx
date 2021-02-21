@@ -23,16 +23,11 @@ export default class Comment extends Component {
     const {
       comment,
       user,
-      commentedText = '',
-      admin = [],
       replyCallback,
       likeCallback
     } = this.props
     const enableEdit = user && comment.user.login === user.login
-    const isAdmin = ~[]
-      .concat(admin)
-      .map(a => a.toLowerCase())
-      .indexOf(comment.user.login.toLowerCase())
+    const isAdmin = 'tubone24' === comment.user.login.toLowerCase()
     const reactions = comment.reactions
 
     let reactionTotalCount = ''
@@ -64,7 +59,7 @@ export default class Comment extends Component {
             >
               {comment.user && comment.user.login}
             </a>
-            <span className="gt-comment-text">{commentedText}</span>
+            <span className="gt-comment-text">commented</span>
             <span className="gt-comment-date">
               {comment.created_at}
             </span>

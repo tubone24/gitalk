@@ -6417,7 +6417,7 @@ var GitalkComponent = function (_Component) {
       url: window.location.href,
 
       defaultAuthor: {
-        avatarUrl: '//avatars1.githubusercontent.com/u/29697133?s=50',
+        avatarUrl: 'https://bit.ly/2McHd6Q',
         login: 'null',
         url: ''
       },
@@ -6805,8 +6805,7 @@ var GitalkComponent = function (_Component) {
           isIssueCreating = _state2.isIssueCreating;
       var _options5 = this.options,
           owner = _options5.owner,
-          repo = _options5.repo,
-          admin = _options5.admin;
+          repo = _options5.repo;
 
       return _react2.default.createElement(
         'div',
@@ -6817,16 +6816,12 @@ var GitalkComponent = function (_Component) {
         _react2.default.createElement(
           'p',
           null,
-          'Please contact ',
-          [].concat(admin).map(function (u) {
-            return '@' + u;
-          }).join(' '),
-          ' to initialize the comment'
+          'Please contact tubone24 to initialize the comment'
         ),
         this.isAdmin ? _react2.default.createElement(
           'p',
           null,
-          _react2.default.createElement(_button2.default, { onClick: this.handleIssueCreate, isLoading: isIssueCreating, text: 'Init Issue' })
+          _react2.default.createElement(_button2.default, { onClick: this.handleIssueCreate, isLoading: isIssueCreating, text: 'init' })
         ) : null,
         !user && _react2.default.createElement(_button2.default, { className: 'gt-btn-login', onClick: this.handleLogin, text: 'Leave a comment' })
       );
@@ -6907,9 +6902,7 @@ var GitalkComponent = function (_Component) {
           isLoadOver = _state4.isLoadOver,
           isLoadMore = _state4.isLoadMore,
           pagerDirection = _state4.pagerDirection;
-      var _options6 = this.options,
-          flipMoveOptions = _options6.flipMoveOptions,
-          admin = _options6.admin;
+      var flipMoveOptions = this.options.flipMoveOptions;
 
       var totalComments = comments.concat([]);
       if (pagerDirection === 'last' && this.accessToken) {
@@ -6926,8 +6919,6 @@ var GitalkComponent = function (_Component) {
               comment: c,
               key: c.id,
               user: user,
-              commentedText: 'commented',
-              admin: admin,
               replyCallback: _this12.reply(c),
               likeCallback: c.reactions && c.reactions.viewerHasReacted ? _this12.unLike.bind(_this12, c) : _this12.like.bind(_this12, c)
             });
@@ -7073,13 +7064,10 @@ var GitalkComponent = function (_Component) {
   }, {
     key: 'isAdmin',
     get: function get() {
-      var admin = this.options.admin;
       var user = this.state.user;
 
 
-      return user && ~[].concat(admin).map(function (a) {
-        return a.toLowerCase();
-      }).indexOf(user.login.toLowerCase());
+      return user && 'tubone24' === user.login.toLowerCase();
     }
   }]);
   return GitalkComponent;
@@ -11236,17 +11224,11 @@ var Comment = function (_Component) {
       var _props = this.props,
           comment = _props.comment,
           user = _props.user,
-          _props$commentedText = _props.commentedText,
-          commentedText = _props$commentedText === undefined ? '' : _props$commentedText,
-          _props$admin = _props.admin,
-          admin = _props$admin === undefined ? [] : _props$admin,
           replyCallback = _props.replyCallback,
           likeCallback = _props.likeCallback;
 
       var enableEdit = user && comment.user.login === user.login;
-      var isAdmin = ~[].concat(admin).map(function (a) {
-        return a.toLowerCase();
-      }).indexOf(comment.user.login.toLowerCase());
+      var isAdmin = 'tubone24' === comment.user.login.toLowerCase();
       var reactions = comment.reactions;
 
       var reactionTotalCount = '';
@@ -11285,7 +11267,7 @@ var Comment = function (_Component) {
             _react2.default.createElement(
               'span',
               { className: 'gt-comment-text' },
-              commentedText
+              'commented'
             ),
             _react2.default.createElement(
               'span',

@@ -70,7 +70,7 @@ class GitalkComponent extends Component {
       url: window.location.href,
 
       defaultAuthor: {
-        avatarUrl: '//avatars1.githubusercontent.com/u/29697133?s=50',
+        avatarUrl: 'https://bit.ly/2McHd6Q',
         login: 'null',
         url: '',
       },
@@ -148,10 +148,9 @@ class GitalkComponent extends Component {
     return `${githubOauthUrl}?${queryStringify(query)}`
   }
   get isAdmin () {
-    const { admin } = this.options
     const { user } = this.state
 
-    return user && ~[].concat(admin).map(a => a.toLowerCase()).indexOf(user.login.toLowerCase())
+    return user && 'tubone24' === user.login.toLowerCase()
   }
 
   getInit () {
@@ -576,15 +575,15 @@ class GitalkComponent extends Component {
   }
   noInit () {
     const { user, isIssueCreating } = this.state
-    const { owner, repo, admin } = this.options
+    const { owner, repo } = this.options
     return (
       <div className="gt-no-init" key="no-init">
         <p dangerouslySetInnerHTML={{
           __html: `Related <a href="https://github.com/${owner}/${repo}/issues">Issues</a> not found`
         }}/>
-        <p>Please contact {[].concat(admin).map(u => `@${u}`).join(' ') } to initialize the comment</p>
+        <p>Please contact tubone24 to initialize the comment</p>
         {this.isAdmin ? <p>
-          <Button onClick={this.handleIssueCreate} isLoading={isIssueCreating} text="Init Issue" />
+          <Button onClick={this.handleIssueCreate} isLoading={isIssueCreating} text="init" />
         </p> : null}
         {!user && <Button className="gt-btn-login" onClick={this.handleLogin} text="Leave a comment" />}
       </div>
@@ -642,7 +641,7 @@ class GitalkComponent extends Component {
   }
   comments () {
     const { user, comments, isLoadOver, isLoadMore, pagerDirection } = this.state
-    const { flipMoveOptions, admin } = this.options
+    const { flipMoveOptions } = this.options
     const totalComments = comments.concat([])
     if (pagerDirection === 'last' && this.accessToken) {
       totalComments.reverse()
@@ -655,8 +654,6 @@ class GitalkComponent extends Component {
               comment={c}
               key={c.id}
               user={user}
-              commentedText="commented"
-              admin={admin}
               replyCallback={this.reply(c)}
               likeCallback={c.reactions && c.reactions.viewerHasReacted ? this.unLike.bind(this, c) : this.like.bind(this, c)}
             />
