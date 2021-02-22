@@ -11335,19 +11335,20 @@ var getQL = function getQL(vars, pagerDirection) {
 function getComments(issue) {
   var _this = this;
 
-  var _options = this.options,
-      perPage = _options.perPage,
-      pagerDirection = _options.pagerDirection,
-      defaultAuthor = _options.defaultAuthor;
+  var defaultAuthor = {
+    avatarUrl: 'https://bit.ly/2McHd6Q',
+    login: 'null',
+    url: ''
+  };
   var _state = this.state,
       cursor = _state.cursor,
       comments = _state.comments;
 
   return _util.axiosGithub.post('/graphql', getQL({
     id: issue.number,
-    pageSize: perPage,
+    pageSize: 10,
     cursor: cursor
-  }, pagerDirection), {
+  }, 'first'), {
     headers: {
       Authorization: 'bearer ' + this.accessToken
     }
