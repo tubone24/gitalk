@@ -105,13 +105,7 @@ function getComments (issue) {
       }
     })
 
-    let cs
-
-    if (pagerDirection === 'last') {
-      cs = [...items, ...comments]
-    } else {
-      cs = [...comments, ...items]
-    }
+    const cs = [...comments, ...items]
 
     const isLoadOver = data.pageInfo.hasPreviousPage === false || data.pageInfo.hasNextPage === false
     this.setState({

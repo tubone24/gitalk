@@ -11373,13 +11373,7 @@ function getComments(issue) {
       };
     });
 
-    var cs = void 0;
-
-    if (pagerDirection === 'last') {
-      cs = [].concat((0, _toConsumableArray3.default)(items), (0, _toConsumableArray3.default)(comments));
-    } else {
-      cs = [].concat((0, _toConsumableArray3.default)(comments), (0, _toConsumableArray3.default)(items));
-    }
+    var cs = [].concat((0, _toConsumableArray3.default)(comments), (0, _toConsumableArray3.default)(items));
 
     var isLoadOver = data.pageInfo.hasPreviousPage === false || data.pageInfo.hasNextPage === false;
     _this.setState({
