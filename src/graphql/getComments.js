@@ -64,17 +64,21 @@ const getQL = (vars, pagerDirection) => {
 }
 
 function getComments (issue) {
-  const { perPage, pagerDirection, defaultAuthor } = this.options
+  const defaultAuthor = {
+    avatarUrl: 'https://bit.ly/2McHd6Q',
+    login: 'null',
+    url: ''
+  }
   const { cursor, comments } = this.state
   return axiosGithub.post(
     '/graphql',
     getQL(
       {
         id: issue.number,
-        pageSize: perPage,
+        pageSize: 10,
         cursor
       },
-      pagerDirection
+      'first'
     ), {
       headers: {
         Authorization: `bearer ${this.accessToken}`
