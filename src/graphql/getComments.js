@@ -2,8 +2,7 @@ import {
   axiosGithub
 } from '../util'
 
-const getQL = (vars, pagerDirection) => {
-  const cursorDirection = pagerDirection === 'last' ? 'before' : 'after'
+const getQL = (vars) => {
   const ql = `
   query getIssueAndComments(
     $id: Int!,
@@ -16,11 +15,11 @@ const getQL = (vars, pagerDirection) => {
         url
         bodyHTML
         createdAt
-        comments(${pagerDirection}: $pageSize, ${cursorDirection}: $cursor) {
+        comments(first: $pageSize, after: $cursor) {
           totalCount
           pageInfo {
-            ${pagerDirection === 'last' ? 'hasPreviousPage' : 'hasNextPage'}
-            ${cursorDirection === 'before' ? 'startCursor' : 'endCursor'}
+            hasNextPage
+            endCursor
           }
           nodes {
             id
@@ -78,7 +77,6 @@ function getComments (issue) {
         pageSize: 10,
         cursor
       },
-      'first'
     ), {
       headers: {
         Authorization: `bearer ${this.accessToken}`

@@ -11319,9 +11319,8 @@ var _util = __webpack_require__(70);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var getQL = function getQL(vars, pagerDirection) {
-  var cursorDirection = pagerDirection === 'last' ? 'before' : 'after';
-  var ql = '\n  query getIssueAndComments(\n    $id: Int!,\n    $cursor: String,\n    $pageSize: Int!\n  ) {\n    repository(owner: "tubone24", name: "blog") {\n      issue(number: $id) {\n        title\n        url\n        bodyHTML\n        createdAt\n        comments(' + pagerDirection + ': $pageSize, ' + cursorDirection + ': $cursor) {\n          totalCount\n          pageInfo {\n            ' + (pagerDirection === 'last' ? 'hasPreviousPage' : 'hasNextPage') + '\n            ' + (cursorDirection === 'before' ? 'startCursor' : 'endCursor') + '\n          }\n          nodes {\n            id\n            databaseId\n            author {\n              avatarUrl\n              login\n              url\n            }\n            bodyHTML\n            body\n            createdAt\n            reactions(first: 100, content: HEART) {\n              totalCount\n              viewerHasReacted\n              pageInfo{\n                hasNextPage\n              }\n              nodes {\n                id\n                databaseId\n                user {\n                  login\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n  ';
+var getQL = function getQL(vars) {
+  var ql = '\n  query getIssueAndComments(\n    $id: Int!,\n    $cursor: String,\n    $pageSize: Int!\n  ) {\n    repository(owner: "tubone24", name: "blog") {\n      issue(number: $id) {\n        title\n        url\n        bodyHTML\n        createdAt\n        comments(first: $pageSize, after: $cursor) {\n          totalCount\n          pageInfo {\n            hasNextPage\n            endCursor\n          }\n          nodes {\n            id\n            databaseId\n            author {\n              avatarUrl\n              login\n              url\n            }\n            bodyHTML\n            body\n            createdAt\n            reactions(first: 100, content: HEART) {\n              totalCount\n              viewerHasReacted\n              pageInfo{\n                hasNextPage\n              }\n              nodes {\n                id\n                databaseId\n                user {\n                  login\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n  ';
 
   if (vars.cursor === null) delete vars.cursor;
 
@@ -11348,7 +11347,7 @@ function getComments(issue) {
     id: issue.number,
     pageSize: 10,
     cursor: cursor
-  }, 'first'), {
+  }), {
     headers: {
       Authorization: 'bearer ' + this.accessToken
     }
