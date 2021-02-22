@@ -2694,8 +2694,7 @@ var GitalkComponent = function (_Component) {
     _this.getCommentsV3 = function (issue) {
       var _this$options = _this.options,
           clientID = _this$options.clientID,
-          clientSecret = _this$options.clientSecret,
-          perPage = _this$options.perPage;
+          clientSecret = _this$options.clientSecret;
       var page = _this.state.page;
 
 
@@ -2711,7 +2710,7 @@ var GitalkComponent = function (_Component) {
             password: clientSecret
           },
           params: {
-            per_page: perPage,
+            per_page: 10,
             page: page
           }
         }).then(function (res) {
@@ -2721,7 +2720,7 @@ var GitalkComponent = function (_Component) {
 
           var isLoadOver = false;
           var cs = comments.concat(res.data);
-          if (cs.length >= issue.comments || res.data.length < perPage) {
+          if (cs.length >= issue.comments || res.data.length < 10) {
             isLoadOver = true;
           }
           _this.setState({
@@ -2889,9 +2888,7 @@ var GitalkComponent = function (_Component) {
     };
 
     _this.handleCommentKeyDown = function (e) {
-      var enableHotKey = _this.options.enableHotKey;
-
-      if (enableHotKey && (e.metaKey || e.ctrlKey) && e.keyCode === 13) {
+      if ((e.metaKey || e.ctrlKey) && e.keyCode === 13) {
         _this.publicBtnEL && _this.publicBtnEL.focus();
         _this.handleCommentCreate();
       }
@@ -2899,31 +2896,9 @@ var GitalkComponent = function (_Component) {
 
     _this.options = (0, _assign2.default)({}, {
       id: window.location.href,
-      number: -1,
-      labels: ['Gitalk'],
       title: window.document.title,
       body: '', // window.location.href + header.meta[description]
-      perPage: 10,
-      createIssueManually: false,
-      proxy: 'https://blog.tubone-project24.xyz/.netlify/functions/cors-proxy-github',
-      //proxy: 'https://github.com/login/oauth/access_token',
-      flipMoveOptions: {
-        staggerDelayBy: 150,
-        appearAnimation: 'accordionVertical',
-        enterAnimation: 'accordionVertical',
-        leaveAnimation: 'accordionVertical'
-      },
-      enableHotKey: true,
-
-      url: window.location.href,
-
-      defaultAuthor: {
-        avatarUrl: 'https://bit.ly/2McHd6Q',
-        login: 'null',
-        url: ''
-      },
-
-      updateCountCallback: null
+      url: window.location.href
     }, props.options);
 
     var storedComment = window.localStorage.getItem(_const.GT_COMMENT);
@@ -2943,7 +2918,7 @@ var GitalkComponent = function (_Component) {
         id: replacedUrl
       }, props.options);
 
-      _util.axiosJSON.post(_this.options.proxy, {
+      _util.axiosJSON.post('https://blog.tubone-project24.xyz/.netlify/functions/cors-proxy-github', {
         code: code,
         client_id: _this.options.clientID,
         client_secret: _this.options.clientSecret
@@ -3013,52 +2988,14 @@ var GitalkComponent = function (_Component) {
       });
     }
   }, {
-    key: 'getIssueById',
-    value: function getIssueById() {
+    key: 'getIssueByLabels',
+    value: function getIssueByLabels() {
       var _this4 = this;
 
       var _options = this.options,
-          number = _options.number,
+          id = _options.id,
           clientID = _options.clientID,
           clientSecret = _options.clientSecret;
-
-      var getUrl = '/repos/tubone24/blog/issues/' + number;
-
-      return new _promise2.default(function (resolve, reject) {
-        _util.axiosGithub.get(getUrl, {
-          auth: {
-            username: clientID,
-            password: clientSecret
-          },
-          params: {
-            t: Date.now()
-          }
-        }).then(function (res) {
-          var issue = null;
-
-          if (res && res.data && res.data.number === number) {
-            issue = res.data;
-
-            _this4.setState({ issue: issue, isNoInit: false });
-          }
-          resolve(issue);
-        }).catch(function (err) {
-          // When the status code is 404, promise will be resolved with null
-          if (err.response.status === 404) resolve(null);
-          reject(err);
-        });
-      });
-    }
-  }, {
-    key: 'getIssueByLabels',
-    value: function getIssueByLabels() {
-      var _this5 = this;
-
-      var _options2 = this.options,
-          id = _options2.id,
-          labels = _options2.labels,
-          clientID = _options2.clientID,
-          clientSecret = _options2.clientSecret;
 
 
       return _util.axiosGithub.get('/repos/tubone24/blog/issues', {
@@ -3067,70 +3004,57 @@ var GitalkComponent = function (_Component) {
           password: clientSecret
         },
         params: {
-          labels: labels.concat(id).join(','),
+          labels: ['Gitalk'].concat(id).join(','),
           t: Date.now()
         }
       }).then(function (res) {
-        var createIssueManually = _this5.options.createIssueManually;
-
         var isNoInit = false;
         var issue = null;
         if (!(res && res.data && res.data.length)) {
-          if (!createIssueManually && _this5.isAdmin) {
-            return _this5.createIssue();
+          if (_this4.isAdmin) {
+            return _this4.createIssue();
           }
 
           isNoInit = true;
         } else {
           issue = res.data[0];
         }
-        _this5.setState({ issue: issue, isNoInit: isNoInit });
+        _this4.setState({ issue: issue, isNoInit: isNoInit });
         return issue;
       });
     }
   }, {
     key: 'getIssue',
     value: function getIssue() {
-      var _this6 = this;
-
-      var number = this.options.number;
       var issue = this.state.issue;
 
       if (issue) {
         this.setState({ isNoInit: false });
         return _promise2.default.resolve(issue);
       }
-
-      if (typeof number === 'number' && number > 0) {
-        return this.getIssueById().then(function (resIssue) {
-          if (!resIssue) return _this6.getIssueByLabels();
-          return resIssue;
-        });
-      }
       return this.getIssueByLabels();
     }
   }, {
     key: 'createIssue',
     value: function createIssue() {
-      var _this7 = this;
+      var _this5 = this;
 
-      var _options3 = this.options,
-          title = _options3.title,
-          body = _options3.body,
-          id = _options3.id,
-          labels = _options3.labels,
-          url = _options3.url;
+      var _options2 = this.options,
+          title = _options2.title,
+          body = _options2.body,
+          id = _options2.id,
+          url = _options2.url;
 
       return _util.axiosGithub.post('/repos/tubone24/blog/issues', {
         title: title,
-        labels: labels.concat(id),
+        labels: ['Gitalk'].concat(id),
         body: body || url + ' \n\n ' + ((0, _util.getMetaContent)('description') || (0, _util.getMetaContent)('description', 'og:description') || '')
       }, {
         headers: {
           Authorization: 'token ' + this.accessToken
         }
       }).then(function (res) {
-        _this7.setState({ issue: res.data });
+        _this5.setState({ issue: res.data });
         return res.data;
       });
     }
@@ -3147,7 +3071,7 @@ var GitalkComponent = function (_Component) {
   }, {
     key: 'createComment',
     value: function createComment() {
-      var _this8 = this;
+      var _this6 = this;
 
       var _state = this.state,
           comment = _state.comment,
@@ -3161,11 +3085,11 @@ var GitalkComponent = function (_Component) {
         }, {
           headers: {
             Accept: 'application/vnd.github.v3.full+json',
-            Authorization: 'token ' + _this8.accessToken
+            Authorization: 'token ' + _this6.accessToken
           }
         });
       }).then(function (res) {
-        _this8.setState({
+        _this6.setState({
           comment: '',
           comments: comments.concat(res.data),
           localComments: localComments.concat(res.data)
@@ -3181,7 +3105,7 @@ var GitalkComponent = function (_Component) {
   }, {
     key: 'like',
     value: function like(comment) {
-      var _this9 = this;
+      var _this7 = this;
 
       var user = this.state.user;
       var comments = this.state.comments;
@@ -3214,7 +3138,7 @@ var GitalkComponent = function (_Component) {
           return c;
         });
 
-        _this9.setState({
+        _this7.setState({
           comments: comments
         });
       });
@@ -3222,7 +3146,7 @@ var GitalkComponent = function (_Component) {
   }, {
     key: 'unLike',
     value: function unLike(comment) {
-      var _this10 = this;
+      var _this8 = this;
 
       var user = this.state.user;
       var comments = this.state.comments;
@@ -3268,7 +3192,7 @@ var GitalkComponent = function (_Component) {
             return c;
           });
 
-          _this10.setState({
+          _this8.setState({
             comments: comments
           });
         }
@@ -3317,7 +3241,7 @@ var GitalkComponent = function (_Component) {
   }, {
     key: 'header',
     value: function header() {
-      var _this11 = this;
+      var _this9 = this;
 
       var _state3 = this.state,
           user = _state3.user,
@@ -3339,7 +3263,7 @@ var GitalkComponent = function (_Component) {
           { className: 'gt-header-comment' },
           _react2.default.createElement('textarea', {
             ref: function ref(t) {
-              _this11.commentEL = t;
+              _this9.commentEL = t;
             },
             className: 'gt-header-textarea ' + (isPreview ? 'hide' : ''),
             value: comment,
@@ -3382,7 +3306,7 @@ var GitalkComponent = function (_Component) {
   }, {
     key: 'comments',
     value: function comments() {
-      var _this12 = this;
+      var _this10 = this;
 
       var _state4 = this.state,
           user = _state4.user,
@@ -3390,7 +3314,6 @@ var GitalkComponent = function (_Component) {
           isLoadOver = _state4.isLoadOver,
           isLoadMore = _state4.isLoadMore,
           pagerDirection = _state4.pagerDirection;
-      var flipMoveOptions = this.options.flipMoveOptions;
 
       var totalComments = comments.concat([]);
       if (pagerDirection === 'last' && this.accessToken) {
@@ -3401,14 +3324,14 @@ var GitalkComponent = function (_Component) {
         { className: 'gt-comments', key: 'comments' },
         _react2.default.createElement(
           _reactFlipMove2.default,
-          flipMoveOptions,
+          { staggerDelayBy: 150, appearAnimation: 'accordionVertical', enterAnimation: 'accordionVertical', leaveAnimation: 'accordionVertical' },
           totalComments.map(function (c) {
             return _react2.default.createElement(_comment2.default, {
               comment: c,
               key: c.id,
               user: user,
-              replyCallback: _this12.reply(c),
-              likeCallback: c.reactions && c.reactions.viewerHasReacted ? _this12.unLike.bind(_this12, c) : _this12.like.bind(_this12, c)
+              replyCallback: _this10.reply(c),
+              likeCallback: c.reactions && c.reactions.viewerHasReacted ? _this10.unLike.bind(_this10, c) : _this10.like.bind(_this10, c)
             });
           })
         ),
@@ -3436,17 +3359,6 @@ var GitalkComponent = function (_Component) {
 
       var cnt = (issue && issue.comments) + localComments.length;
       var isDesc = pagerDirection === 'last';
-      var updateCountCallback = this.options.updateCountCallback;
-
-      // window.GITALK_COMMENTS_COUNT = cnt
-
-      if (updateCountCallback && {}.toString.call(updateCountCallback) === '[object Function]') {
-        try {
-          updateCountCallback(cnt);
-        } catch (err) {
-          console.log('error occurred updateCountCallback:', err);
-        }
-      }
 
       return _react2.default.createElement(
         'div',

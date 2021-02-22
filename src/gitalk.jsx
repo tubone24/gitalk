@@ -50,31 +50,9 @@ class GitalkComponent extends Component {
     super(props)
     this.options = Object.assign({}, {
       id: window.location.href,
-      number: -1,
-      labels: ['Gitalk'],
       title: window.document.title,
       body: '', // window.location.href + header.meta[description]
-      perPage: 10,
-      createIssueManually: false,
-      proxy: 'https://blog.tubone-project24.xyz/.netlify/functions/cors-proxy-github',
-      //proxy: 'https://github.com/login/oauth/access_token',
-      flipMoveOptions: {
-        staggerDelayBy: 150,
-        appearAnimation: 'accordionVertical',
-        enterAnimation: 'accordionVertical',
-        leaveAnimation: 'accordionVertical',
-      },
-      enableHotKey: true,
-
       url: window.location.href,
-
-      defaultAuthor: {
-        avatarUrl: 'https://bit.ly/2McHd6Q',
-        login: 'null',
-        url: '',
-      },
-
-      updateCountCallback: null
     }, props.options)
 
     const storedComment = window.localStorage.getItem(GT_COMMENT)
@@ -94,7 +72,7 @@ class GitalkComponent extends Component {
         id: replacedUrl
       }, props.options)
 
-      axiosJSON.post(this.options.proxy, {
+      axiosJSON.post('https://blog.tubone-project24.xyz/.netlify/functions/cors-proxy-github', {
         code,
         client_id: this.options.clientID,
         client_secret: this.options.clientSecret
@@ -170,39 +148,8 @@ class GitalkComponent extends Component {
       this.logout()
     })
   }
-  getIssueById () {
-    const { number, clientID, clientSecret } = this.options
-    const getUrl = `/repos/tubone24/blog/issues/${number}`
-
-    return new Promise((resolve, reject) => {
-      axiosGithub.get(getUrl, {
-        auth: {
-          username: clientID,
-          password: clientSecret
-        },
-        params: {
-          t: Date.now()
-        }
-      })
-        .then(res => {
-          let issue = null
-
-          if (res && res.data && res.data.number === number) {
-            issue = res.data
-
-            this.setState({ issue, isNoInit: false })
-          }
-          resolve(issue)
-        })
-        .catch(err => {
-          // When the status code is 404, promise will be resolved with null
-          if (err.response.status === 404) resolve(null)
-          reject(err)
-        })
-    })
-  }
   getIssueByLabels () {
-    const { id, labels, clientID, clientSecret } = this.options
+    const { id, clientID, clientSecret } = this.options
 
     return axiosGithub.get(`/repos/tubone24/blog/issues`, {
       auth: {
@@ -210,15 +157,14 @@ class GitalkComponent extends Component {
         password: clientSecret
       },
       params: {
-        labels: labels.concat(id).join(','),
+        labels: ['Gitalk'].concat(id).join(','),
         t: Date.now()
       }
     }).then(res => {
-      const { createIssueManually } = this.options
       let isNoInit = false
       let issue = null
       if (!(res && res.data && res.data.length)) {
-        if (!createIssueManually && this.isAdmin) {
+        if (this.isAdmin) {
           return this.createIssue()
         }
 
@@ -231,26 +177,18 @@ class GitalkComponent extends Component {
     })
   }
   getIssue () {
-    const { number } = this.options
     const { issue } = this.state
     if (issue) {
       this.setState({ isNoInit: false })
       return Promise.resolve(issue)
     }
-
-    if (typeof number === 'number' && number > 0) {
-      return this.getIssueById().then(resIssue => {
-        if (!resIssue) return this.getIssueByLabels()
-        return resIssue
-      })
-    }
     return this.getIssueByLabels()
   }
   createIssue () {
-    const { title, body, id, labels, url } = this.options
+    const { title, body, id, url } = this.options
     return axiosGithub.post(`/repos/tubone24/blog/issues`, {
       title,
-      labels: labels.concat(id),
+      labels: ['Gitalk'].concat(id),
       body: body || `${url} \n\n ${
         getMetaContent('description') ||
         getMetaContent('description', 'og:description') || ''
@@ -266,7 +204,7 @@ class GitalkComponent extends Component {
   }
   // Get comments via v3 api, don't require login, but sorting feature is disable
   getCommentsV3 = issue => {
-    const { clientID, clientSecret, perPage } = this.options
+    const { clientID, clientSecret } = this.options
     const { page } = this.state
 
     return this.getIssue()
@@ -282,14 +220,14 @@ class GitalkComponent extends Component {
             password: clientSecret
           },
           params: {
-            per_page: perPage,
+            per_page: 10,
             page
           }
         }).then(res => {
           const { comments, issue } = this.state
           let isLoadOver = false
           const cs = comments.concat(res.data)
-          if (cs.length >= issue.comments || res.data.length < perPage) {
+          if (cs.length >= issue.comments || res.data.length < 10) {
             isLoadOver = true
           }
           this.setState({
@@ -553,8 +491,7 @@ class GitalkComponent extends Component {
     this.setState({ pagerDirection: direction })
   }
   handleCommentKeyDown = e => {
-    const { enableHotKey } = this.options
-    if (enableHotKey && (e.metaKey || e.ctrlKey) && e.keyCode === 13) {
+    if ((e.metaKey || e.ctrlKey) && e.keyCode === 13) {
       this.publicBtnEL && this.publicBtnEL.focus()
       this.handleCommentCreate()
     }
@@ -633,14 +570,13 @@ class GitalkComponent extends Component {
   }
   comments () {
     const { user, comments, isLoadOver, isLoadMore, pagerDirection } = this.state
-    const { flipMoveOptions } = this.options
     const totalComments = comments.concat([])
     if (pagerDirection === 'last' && this.accessToken) {
       totalComments.reverse()
     }
     return (
       <div className="gt-comments" key="comments">
-        <FlipMove {...flipMoveOptions}>
+        <FlipMove staggerDelayBy={150} appearAnimation="accordionVertical" enterAnimation="accordionVertical" leaveAnimation="accordionVertical" >
           {totalComments.map(c => (
             <Comment
               comment={c}
@@ -662,19 +598,6 @@ class GitalkComponent extends Component {
     const { user, issue, isPopupVisible, pagerDirection, localComments } = this.state
     const cnt = (issue && issue.comments) + localComments.length
     const isDesc = pagerDirection === 'last'
-    const { updateCountCallback } = this.options
-
-    // window.GITALK_COMMENTS_COUNT = cnt
-    if (
-      updateCountCallback &&
-      {}.toString.call(updateCountCallback) === '[object Function]'
-    ) {
-      try {
-        updateCountCallback(cnt)
-      } catch (err) {
-        console.log('error occurred updateCountCallback:', err)
-      }
-    }
 
     return (
       <div className="gt-meta" key="meta" >
