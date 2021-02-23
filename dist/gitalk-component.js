@@ -2528,6 +2528,8 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var ph = 'data:image/gif;base64,R0lGODlhAQABAGAAACH5BAEKAP8ALAAAAAABAAEAAAgEAP8FBAA7';
+
 exports.default = function (_ref) {
   var src = _ref.src,
       className = _ref.className,
@@ -2537,7 +2539,7 @@ exports.default = function (_ref) {
   return _react2.default.createElement(
     'div',
     { className: 'gt-avatar ' + className },
-    _react2.default.createElement('img', { src: src || defaultSrc, alt: '@' + alt, onError: function onError(e) {
+    _react2.default.createElement('img', { className: 'lozad', src: ph, 'data-src': src || defaultSrc, alt: '@' + alt, onError: function onError(e) {
         e.target.src = defaultSrc;
       } })
   );
@@ -3282,7 +3284,7 @@ var GitalkComponent = function (_Component) {
             { className: 'gt-header-controls' },
             _react2.default.createElement(
               'a',
-              { className: 'gt-header-controls-tip', href: 'https://guides.github.com/features/mastering-markdown/', target: '_blank' },
+              { className: 'gt-header-controls-tip', href: 'https://guides.github.com/features/mastering-markdown/', rel: 'noopener noreferrer' },
               _react2.default.createElement(_svg2.default, { className: 'gt-ico-tip', name: 'tip', text: 'Markdown is supported' })
             ),
             user && _react2.default.createElement(_button2.default, {
@@ -3364,7 +3366,7 @@ var GitalkComponent = function (_Component) {
         'div',
         { className: 'gt-meta', key: 'meta' },
         _react2.default.createElement('span', { className: 'gt-counts', dangerouslySetInnerHTML: {
-            __html: '<a class="gt-link gt-link-counts" href="' + (issue && issue.html_url) + '" target="_blank">' + cnt + '</a> comment(s)'
+            __html: '<a class="gt-link gt-link-counts" href="' + (issue && issue.html_url) + '" rel="noopener noreferrer">' + cnt + '</a> comment(s)'
           } }),
         isPopupVisible && _react2.default.createElement(
           'div',
@@ -3381,7 +3383,7 @@ var GitalkComponent = function (_Component) {
             { className: 'gt-copyright' },
             _react2.default.createElement(
               'a',
-              { className: 'gt-link gt-link-project', href: 'https://github.com/gitalk/gitalk', target: '_blank' },
+              { className: 'gt-link gt-link-project', href: 'https://github.com/gitalk/gitalk', rel: 'noopener noreferrer' },
               'Gitalk'
             ),
             _react2.default.createElement(
@@ -7725,7 +7727,7 @@ var Comment = function (_Component) {
                 href: comment.html_url,
                 className: 'gt-comment-edit',
                 title: 'Edit',
-                target: '_blank'
+                rel: 'noopener noreferrer'
               },
               _react2.default.createElement(_svg2.default, { className: 'gt-ico-edit', name: 'edit' })
             ) : _react2.default.createElement(
