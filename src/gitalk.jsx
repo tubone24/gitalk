@@ -545,7 +545,7 @@ class GitalkComponent extends Component {
             dangerouslySetInnerHTML={{ __html: previewHtml }}
           />
           <div className="gt-header-controls">
-            <a className="gt-header-controls-tip" href="https://guides.github.com/features/mastering-markdown/" rel="noopener noreferrer">
+            <a className="gt-header-controls-tip" href="https://guides.github.com/features/mastering-markdown/" target="_blank" rel="noopener noreferrer">
               <Svg className="gt-ico-tip" name="tip" text="Markdown is supported"/>
             </a>
             {user && <Button
@@ -602,7 +602,7 @@ class GitalkComponent extends Component {
     return (
       <div className="gt-meta" key="meta" >
         <span className="gt-counts" dangerouslySetInnerHTML={{
-          __html: `<a class="gt-link gt-link-counts" href="${issue && issue.html_url}" rel="noopener noreferrer">${cnt}</a> comment(s)`
+          __html: `<a class="gt-link gt-link-counts" href="${issue && issue.html_url}" target="_blank" rel="noopener noreferrer">${cnt}</a> comment(s)`
         }}/>
         {isPopupVisible &&
           <div className="gt-popup">
@@ -613,7 +613,7 @@ class GitalkComponent extends Component {
               <a className="gt-action gt-action-login" onClick={this.handleLogin}>Login with GitHub</a>
             }
             <div className="gt-copyright">
-              <a className="gt-link gt-link-project" href="https://github.com/gitalk/gitalk" rel="noopener noreferrer">Gitalk</a>
+              <a className="gt-link gt-link-project" href="https://github.com/gitalk/gitalk" target="_blank" rel="noopener noreferrer">Gitalk</a>
               <span className="gt-version">{GT_VERSION}</span>
             </div>
           </div>
